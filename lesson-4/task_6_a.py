@@ -10,4 +10,17 @@
     предусмотреть условие, при котором повторение элементов списка будет прекращено.
 """
 
-import itertools
+from itertools import count, takewhile
+
+USR_INT_MIN, USR_INT_MAX = int(input("Введите начальное целое число: ")), \
+                           int(input("Введите конечное целое число: "))
+
+# Использую генераторы, т.к. работают быстрее
+RESULT = [ELEM for ELEM in takewhile(lambda x: x <= USR_INT_MAX, count(USR_INT_MIN))]
+print(f"Список целых чисел от {USR_INT_MIN} до {USR_INT_MAX} - {RESULT}")
+
+"""
+Введите начальное целое число: 3
+Введите конечное целое число: 10
+Список целых чисел от 3 до 10 - [3, 4, 5, 6, 7, 8, 9, 10]
+"""
