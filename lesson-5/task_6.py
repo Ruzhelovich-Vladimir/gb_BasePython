@@ -1,41 +1,50 @@
 """
-1. 	Реализовать скрипт, в котором должна быть предусмотрена
-    функция расчета заработной платы сотрудника. В расчете
-    необходимо использовать формулу: (выработка в часах *
-    ставка в час) + премия. Для выполнения расчета для
-    конкретных значений необходимо запускать скрипт с параметрами.
+6)	Необходимо создать (не программно) текстовый файл, где каждая строка
+    описывает учебный предмет и наличие лекционных, практических и
+    лабораторных занятий по этому предмету и их количество. Важно, чтобы
+    для каждого предмета не обязательно были все типы занятий. Сформировать
+    словарь, содержащий название предмета и общее количество занятий по нему.
+    Вывести словарь на экран.
+        Примеры строк файла: Информатика:   100(л)   50(пр)   20(лаб).
+                                  Физика:   30(л)   —   10(лаб)
+                             Физкультура:   —   30(пр)   —
+    Пример словаря: {“Информатика”: 170, “Физика”: 40, “Физкультура”: 30}
 """
 
-from sys import argv
+from re import sub
+import json
 
 
-def convert_to_float(val):
-    """
-    Преобразование параметра в действительное число
-    :param val: строка
-    :return: действительное число
-    """
-    result = None
-    try:
-        result = float(val)
-    except ValueError:
-        print(f"Значение '{val}' не может быть преобразовано в действительное число!")
+FILENAME = "text_6.txt"
+JSON_FILENAME = "text_6.json"
+RESULT = {}
 
-    return result
-
-
-if len(argv) == 4:
-    GET_SALARY = (lambda val, bonus, hour: hour * val + bonus)
-    VAL, BONUS, HOUR = convert_to_float(argv[1]), \
-                       convert_to_float(argv[2]), \
-                       convert_to_float(argv[3])
-    if None not in (VAL, BONUS, HOUR):
-        print(f"Заработная плата составит: {GET_SALARY(VAL, BONUS, HOUR)} руб.")
+try:
+    with open(file=FILENAME, mode="r", encoding="utf-8") as f:
+        while True:
+            STR = f.readline()
+            if len(STR) == 0:
+                break
+            LST = STR.split(":")
+            SUBJECT = LST[0]
+            # Удаляю все символы кроме букв и пробелов
+            STR_TEMP = sub(r"[^[\d\s]", "", LST[1][:-1])
+            # Удаляю лишние проблелы
+            STR_TEMP = sub(r"\s+", " ", STR_TEMP)
+            # Удаляю лишние проблелы начале строки
+            STR_TEMP = sub(r"^\s+", "", STR_TEMP)
+            # Удаляю лишние проблелы в конце строки
+            STR_TEMP = sub(r"\s+$", "", STR_TEMP)
+            HOURS_LST = [float(ELEM) for ELEM in STR_TEMP.split(" ")]
+            HOURS = sum(HOURS_LST)
+            # Если ключ существует, то значение сохраняем в переменную VAL
+            VAL = RESULT.get(f"{SUBJECT}", 0)
+            RESULT.update({SUBJECT: HOURS + VAL})
+    with open(JSON_FILENAME, mode="w", encoding="utf-8") as f:
+        json.dump(RESULT, f, sort_keys=True, indent=2)
+except IOError:
+    print("Ошибка достапа к файлу")
+except ValueError:
+    print("Строка не является числом")
 else:
-    print("Не хватает параметров, введите скрипт со следующими параметрами task_1 СтоимостьЧаса "
-          "Перемия ОтработанныеЧасы")
-
-"""
-"C:\Program Files (x86)\Python38-32\python.exe" C:/Users/Vladimir/Desktop/GB_PythonBase/lesson-4/task_1.py 200 25000 200
-Заработная плата составит: 65000.0 руб.
-"""
+    print(f"Ок.")

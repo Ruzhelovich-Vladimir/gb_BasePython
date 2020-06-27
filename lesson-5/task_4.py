@@ -1,41 +1,37 @@
 """
-1. 	Реализовать скрипт, в котором должна быть предусмотрена
-    функция расчета заработной платы сотрудника. В расчете
-    необходимо использовать формулу: (выработка в часах *
-    ставка в час) + премия. Для выполнения расчета для
-    конкретных значений необходимо запускать скрипт с параметрами.
+4)	Создать (не программно) текстовый файл со следующим содержимым:
+            One — 1
+            Two — 2
+            Three — 3
+            Four — 4
+    Необходимо написать программу, открывающую файл на чтение и
+    считывающую построчно данные. При этом английские числительные должны
+    заменяться на русские. Новый блок строк должен записываться в новый
+    текстовый файл.
 """
 
-from sys import argv
+FILENAME_EN = "task_4_en.txt"
+FILENAME_RU = "task_4_ru.txt"
+SEPARATOR = " "
+INX = 0
 
+TBL = {"One": "Один", "Two": "Два", "Three": "Три", "Four": "Четыре"}
 
-def convert_to_float(val):
-    """
-    Преобразование параметра в действительное число
-    :param val: строка
-    :return: действительное число
-    """
-    result = None
-    try:
-        result = float(val)
-    except ValueError:
-        print(f"Значение '{val}' не может быть преобразовано в действительное число!")
+try:
+    with open(file=FILENAME_EN, mode="r", encoding="utf-8") as f_en, \
+        open(file=FILENAME_RU, mode="w", encoding="utf-8") as f_ru:
 
-    return result
+        STR = f_en.read()  # Считываю весь файл
+        # Не нешел встроенный переводчик, поэтому сделал не очень красиво, перебираю весь словарь
+        # есть библиотека goslate, но она не встроенная, поэтому не стал применять её
+        for ELEM in TBL:
+            STR = STR.replace(ELEM, TBL[ELEM])
+        f_ru.write(STR)
 
+        # Для данной задачи применил именно этот метод потому что кол-во строк
+        # больше количества слов в словаре, парсить слова и их искать будет дольше.
 
-if len(argv) == 4:
-    GET_SALARY = (lambda val, bonus, hour: hour * val + bonus)
-    VAL, BONUS, HOUR = convert_to_float(argv[1]), \
-                       convert_to_float(argv[2]), \
-                       convert_to_float(argv[3])
-    if None not in (VAL, BONUS, HOUR):
-        print(f"Заработная плата составит: {GET_SALARY(VAL, BONUS, HOUR)} руб.")
+except IOError:
+    print("Ошибка достапа к файлу")
 else:
-    print("Не хватает параметров, введите скрипт со следующими параметрами task_1 СтоимостьЧаса "
-          "Перемия ОтработанныеЧасы")
-
-"""
-"C:\Program Files (x86)\Python38-32\python.exe" C:/Users/Vladimir/Desktop/GB_PythonBase/lesson-4/task_1.py 200 25000 200
-Заработная плата составит: 65000.0 руб.
-"""
+    print(f"Ок")
